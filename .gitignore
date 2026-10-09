@@ -1,0 +1,13 @@
+.venv/
+__pycache__/
+results/
+*.sqlite
+data/raw/
+*.jsonl.gz
+# datasets live on Hugging Face (ktolnos/shutdown-self-distillation); only the card is tracked
+data/*
+!data/README.md
+# vendored upstream eval repos: re-fetch with scripts/fetch_third_party.sh
+third_party/*
+!third_party/README.md
+*.pre_fix
