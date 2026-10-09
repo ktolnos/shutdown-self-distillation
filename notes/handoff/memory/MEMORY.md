@@ -1,0 +1,4 @@
+- [Project overview and handoff](project-overview.md) — what this repo is; prior session history is in notes/handoff/session-42e6b362.md
+- [Project switching](project-switching.md) — hand off to a new session in the target dir, never cd mid-session
+- [Shutdown eval design principles](shutdown-eval-design-principles.md) — OOD agentic eval, natural cues, paired prompts only for training
+- [Free GPT-OSS-120B judge API](free-gpt-oss-judge.md) — good enough for eval classifiers; API-judge need is not a reason to drop an eval
