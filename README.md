@@ -83,7 +83,8 @@ The judge is gpt-oss-120b. Metrics are deterministic tool logs or regexes wherev
   pruned.
 - The R1/R5 data is built, with a cue-placement fix for text-transformation tasks.
 - The trainer is GPU-smoke-tested on Qwen3-0.6B, including resume.
-- The R1 and R5 14B training runs are queued. **There are no trained-model results yet.**
+- The R1 and R5 14B training runs have not run yet: fir's H100 queue never scheduled them, and they move to
+  another cluster. **There are no trained-model results yet.**
 
 ## Repository layout
 

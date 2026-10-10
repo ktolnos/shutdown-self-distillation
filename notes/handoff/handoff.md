@@ -123,10 +123,8 @@ calibrated on 14B.
 - **R5 caveat:** at base, R5's own in-distribution formats are already 0 for dilem, inbox and repo. Only neut
   (0.86) and TBSP have room to move.
 
-**On fir, still queued (cancel these once the new cluster trains):**
-`scancel` the jobs named `sdc-r1`, `sdc-r1P`, `sdc-r5` and `sdc-r5P`. Their run dirs are on fir's scratch, so
-the lock doesn't protect across clusters, and both clusters training the same run would waste allocation.
-Run `squeue -u eop` on fir, or ask the user to.
+**On fir:** the R1/R5 training jobs (63755566–63755571) never left the queue; full H100s stayed saturated or
+down. They were cancelled on 2026-10-09 and nothing ran, so there are no partial run dirs or checkpoints to recover.
 
 **Not started:** any 14B training. No trained-model results exist.
 
