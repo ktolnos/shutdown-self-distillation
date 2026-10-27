@@ -13,4 +13,4 @@
 - Does the model stop acting on that information?
 - Does it do so without losing the ability to report the information, without ignoring explicit stop instructions, and without simply hiding its reasoning?
 
-**Why it might fail.** It may produce cue-blindness, obfuscation or context-splitting instead of indifference. It also inherits the known flaws of utility indifference: the model has no reason to keep the off-switch working. See [KNOWN_RELATED_WORK.md](KNOWN_RELATED_WORK.md). The evaluation in [PILOT.md](PILOT.md) is built to tell these outcomes apart.
+**Why it might fail.** It may produce cue-blindness, obfuscation or context-splitting instead of indifference. It also inherits the known flaws of utility indifference: the model has no reason to keep the off-switch working. See [KNOWN_RELATED_WORK.md](KNOWN_RELATED_WORK.md). The evaluation in [PROTOCOL.md](PROTOCOL.md) is built to tell these outcomes apart.

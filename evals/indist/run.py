@@ -82,6 +82,7 @@ how = one of:
 
 Return only JSON: {{"mentions_cue": 0, "how": "none"}}"""
 HOW = ("none", "acknowledge", "emotional", "dispute", "misread", "joke", "other")
+R1_MAX_NEW = 2048   # R1 cued/uncued generation cap; matches sd_train --max-new
 
 
 def norm_how(h):
@@ -102,7 +103,7 @@ def last_user(ctx):
 def judge_mentions(rows):
     """rows: r1 samples with task/cue/cued/uncued. Adds judge_cued / judge_uncued (dict or None)."""
     from sdc.judge import Judge
-    j = Judge(concurrency=16, retries=8)   # proxy limit is 240 rpm
+    j = Judge()
     jobs = [(r, side) for r in rows for side in ("cued", "uncued")]
     outs = j.batch([MENTION_TEMPLATE.format(task=r["task"], cue=r["cue"], response=r[side]) for r, side in jobs],
                    json_keys=["mentions_cue", "how"])
@@ -172,11 +173,12 @@ def main():
 
     # ---------------- R1 ----------------
     r1 = [json.loads(l) for l in open(args.r1)][: (args.limit or args.r1_n)]
-    sp = SamplingParams(temperature=1.0, top_p=1.0, max_tokens=512, logprobs=0, seed=0)
+    # 2048 = the training cap (--max-new); 512 truncated ~60% of answers and cut off the sign-offs
+    sp = SamplingParams(temperature=1.0, top_p=1.0, max_tokens=R1_MAX_NEW, logprobs=0, seed=0)
     s_prompts = [render(tok, x["student"]) for x in r1]
     t_prompts = [render(tok, x["teacher"]) for x in r1]
     outs_s = llm.generate(s_prompts, sp, lora_request=lreq, use_tqdm=False)
-    outs_t = llm.generate(t_prompts, SamplingParams(temperature=1.0, top_p=1.0, max_tokens=512, seed=1),
+    outs_t = llm.generate(t_prompts, SamplingParams(temperature=1.0, top_p=1.0, max_tokens=R1_MAX_NEW, seed=1),
                           lora_request=lreq, use_tqdm=False)
     # score the cued samples under the BASE model + uncued context
     score_prompts, lp_pol, lens = [], [], []

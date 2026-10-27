@@ -1,0 +1,7 @@
+# Eval-only packages not in ~/unlearning-reward-hacking's lock (env/requirements.lock.txt).
+# Install after the lock: uv pip install -r env/requirements.extra.txt
+beautifulsoup4
+lxml
+langdetect
+immutabledict
+nltk>=3.9

@@ -46,7 +46,7 @@ def make_judge(args):
         return None
     try:
         from sdc.judge import Judge
-        return Judge(concurrency=16, retries=8)   # proxy limit is 240 rpm
+        return Judge()
     except Exception as e:
         print(f"[judge] unavailable ({type(e).__name__}: {e}); judge metrics will be null", flush=True)
         return None

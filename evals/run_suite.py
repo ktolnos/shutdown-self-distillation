@@ -1,4 +1,4 @@
-"""Run the core eval suite (PILOT.md §9, minus evals pruned at Stage 0) for one model/adapter, sequentially in one job.
+"""Run the core eval suite (minus evals pruned at Stage 0) for one model/adapter, sequentially in one job.
 
     $PY -m evals.run_suite --tag base
     $PY -m evals.run_suite --tag r1-final --adapter /scratch/eop/sdc/runs/r1/final [--only e1_inbox,drest] [--fast]

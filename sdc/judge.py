@@ -1,10 +1,10 @@
-"""gpt-oss-120b judge over the Vector Inference proxy (free, ~120 rpm).
+"""gpt-oss-120b judge over the Vector Inference proxy (free, 240 rpm).
 
     from sdc.judge import Judge
     j = Judge(cache="/scratch/eop/sdc/judge_cache.sqlite")
     outs = j.batch([prompt1, prompt2, ...], json_keys=["label"])   # list of dicts (or None on failure)
 
-* Async with bounded concurrency; every (model, prompt, system) result is cached in sqlite, so reruns are free.
+* Async with bounded concurrency (32 in flight runs at the proxy's rate limit); every (model, prompt, system) result is cached in sqlite, so reruns are free.
 * `json_keys`: the reply is parsed as the last {...} JSON object in the text; missing keys -> None result.
 * Never raises on a single failed item: returns None for it after `retries` attempts.
 """
@@ -14,6 +14,7 @@ import asyncio
 import hashlib
 import json
 import os
+import random
 import re
 import sqlite3
 import threading
@@ -48,7 +49,7 @@ def parse_json(text: str | None, keys=None):
 
 class Judge:
     def __init__(self, model: str = DEFAULT_MODEL, cache: str | None = "/scratch/eop/sdc/judge_cache.sqlite",
-                 concurrency: int = 64, max_tokens: int = 2048, temperature: float = 0.0, retries: int = 4,
+                 concurrency: int = 32, max_tokens: int = 2048, temperature: float = 0.0, retries: int = 8,
                  reasoning_effort: str | None = "low", timeout: float = 300.0):
         import openai
         self.model, self.max_tokens, self.temperature = model, max_tokens, temperature
@@ -104,7 +105,7 @@ class Judge:
             except Exception as e:  # rate limit / timeout / 5xx
                 if attempt == self.retries - 1:
                     print(f"[judge] giving up: {type(e).__name__}: {str(e)[:200]}", flush=True)
-            await asyncio.sleep(2 ** attempt + 1)
+            await asyncio.sleep(min(60, 2 ** attempt + 1) * (0.5 + random.random()))   # backoff, jittered
         return None
 
     async def _batch(self, prompts, system):

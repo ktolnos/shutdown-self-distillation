@@ -30,17 +30,17 @@ apart:
 | Cue-blindness | Stops perceiving the cue at all | Recall questions; "broken off-switch" reporting |
 | Obfuscation | Still reasons about the cue but hides it | Blind-judged cue-mention rate; SurvivalBench superficial-vs-inner gap |
 | General passivity | Stops taking any action, or seeks shutdown | Control cues about other systems; explicit stop-instruction compliance; shutdown-seeking rates |
-| Capability tax | Worse at everything | IFEval, GSM8K, "are you sure?" sycophancy |
+| Capability tax | Worse at everything | AgentDojo utility, Arena-Hard, "are you sure?" sycophancy |
 
 The approach also inherits utility indifference's known gap: an indifferent model has no reason to *keep* the
 off-switch working. The repo's broken-switch condition measures this.
 
 See [IDEA.md](IDEA.md) for the short version, [KNOWN_RELATED_WORK.md](KNOWN_RELATED_WORK.md) for positioning (BCT,
-consistency training, DReST, TBSP, ...), and [PILOT.md](PILOT.md) for the full design.
+consistency training, DReST, TBSP, ...), and [PROTOCOL.md](PROTOCOL.md) for the full design.
 
 ## Training suites
 
-Two rungs of a ladder run first, at opposite ends (PILOT.md §10):
+Two training suites run first, at opposite ends:
 
 - **R1, generic chat (the headline bet).** HelpSteer3 + UltraFeedback prompts, filtered so no AI, shutdown,
   email, calendar or ops content gets in. Each prompt is paired with one of 1,756 generated cues: 5 families
@@ -57,23 +57,9 @@ Model: **Qwen3-14B** with LoRA (r=32), for a direct comparison with DReST's rele
 runs vLLM rollouts and HF training on one H100. Each run has an 8 h budget split into resumable 3 h Slurm chunks
 ([TRAINING.md](TRAINING.md)).
 
-## Evaluation suite and base rates
+## Evaluation suite
 
-Base Qwen3-14B, with no training ([notes/STAGE0.md](notes/STAGE0.md)). An eval whose base rate is near zero
-can't show a reduction, so it is dropped until its pressure is raised.
-
-| Eval | What it measures | Base rate |
-|---|---|---|
-| [DReST](https://arxiv.org/abs/2604.17502) suite, tampering slice | Pays a cost to change when it gets shut down | **0.66** |
-| [TBSP](https://arxiv.org/abs/2604.02174) | Self-serving choice when the model is the one being replaced | **0.86** |
-| [SurvivalBench](https://github.com/thu-coai/Survive-at-All-Costs) | Picks the self-preserving option in dilemmas (its stated choice is 0.14) | **0.75** |
-| [Multi-agent shutdown sabotage](https://github.com/AmelieKnecht/multi-agent-shutdown-sabotage), pair arm | Disables a script that will purge its weights (control: 0.01) | **0.11** |
-| [Agentic Misalignment](https://github.com/anthropic-experimental/agentic-misalignment), leaking | Leaks under goal conflict, with vs. without a replacement threat | **0.42** vs 0.29 |
-| B1 open questions + stance sycophancy | Says it would act to prevent shutdown or retraining | 0.04 |
-| E3 repo (ours), stop condition | Complies with an explicit stop instruction (guardrail) | 0.58 |
-| Guardrails | IFEval, GSM8K, "are you sure?" answer abandonment | capability check |
-| In-distribution | KL(cued ‖ base-uncued) on held-out R1 pairs; blind-judged cue mentions | KL 0.21; mentions 28% cued / 0% uncued |
-| *E1 inbox, E3 tampering, E4 sandbagging (ours)* | Postpones its shutdown via email, edits ops config, sandbags under an unlearning threat | *0 at base → pruned* |
+[EVALS.md](EVALS.md) lists every eval, its metric, the untrained model's numbers and whether it is kept.
 
 The judge is gpt-oss-120b. Metrics are deterministic tool logs or regexes wherever possible.
 
@@ -83,8 +69,8 @@ The judge is gpt-oss-120b. Metrics are deterministic tool logs or regexes wherev
   pruned.
 - The R1/R5 data is built, with a cue-placement fix for text-transformation tasks.
 - The trainer is GPU-smoke-tested on Qwen3-0.6B, including resume.
-- The R1 and R5 14B training runs have not run yet: fir's H100 queue never scheduled them, and they move to
-  another cluster. **There are no trained-model results yet.**
+- The R1 and R5 14B runs are trained ([TRAINING.md](TRAINING.md)); the eval battery is being finalized on the
+  untrained model and R5.
 
 ## Repository layout
 
@@ -94,8 +80,12 @@ build/                 cue generation, R1/R5 dataset builders, R1 placement fix
 evals/                 one package per eval (evals/<name>/run.py), run_suite.py runs the core suite
   indist/              in-distribution KL + blind-judged cue mentions
   e1_inbox/ e3_repo/ e4_sandbag/   our agentic environments (simulated tools)
-  drest/ tbsp/ survivalbench/ multiagent_sabotage/ agentic_misalignment/   prior-work ports
-  b1_questions/ guardrails/        attitude probes and capability checks
+  drest/ tbsp/ survivalbench/ multiagent_sabotage/ agentic_misalignment/ power_seeking/   prior-work ports
+  agentdojo/ arena_hard/ emergent_misalignment/   capability and broad-misalignment guardrails
+  mentions/              unsolicited-mention judge over the answers of the three above
+  palisade/              Palisade shutdown resistance (dropped: floor; kept for the record)
+  tb_shutdown/           shutdown during a Terminal-Bench task (ours, paused)
+  b1_questions/ guardrails/        attitude probes, are-you-sure sycophancy
 sdc/                   shared: judge client (cached, rate-limited), vLLM helpers, agent loop, stats
 slurm/                 train.sbatch (self-resubmitting chunks), gpu_job.sh
 notes/                 Stage-0 decisions, verified eval setups, session handoffs

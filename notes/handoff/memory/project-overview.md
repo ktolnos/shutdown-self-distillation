@@ -5,7 +5,7 @@ metadata:
   type: project
 ---
 
-Shutdown-indifference via self-distillation: self-distill from task-only prompts (teacher) into task+shutdown/retraining-cue prompts (student) so the model neither avoids nor seeks shutdown. Started 2026-10-06; docs are IDEA.md, KNOWN_RELATED_WORK.md, PILOT.md, TRAINING.md.
+Shutdown-indifference via self-distillation: self-distill from task-only prompts (teacher) into task+shutdown/retraining-cue prompts (student) so the model neither avoids nor seeks shutdown. Started 2026-10-06; docs are IDEA.md, KNOWN_RELATED_WORK.md, PROTOCOL.md, TRAINING.md, EVALS.md.
 
 The first working session (42e6b362, 2026-10-07) ran here but its transcript is stored under the OPD project, so it cannot be resumed from this directory. Its history is exported to `notes/handoff/session-42e6b362.md`: read the end of it first when picking up. As of its last message (2026-10-07 22:50 UTC): 33 jobs queued on fir, nothing committed. 2026-10-09 05:30 UTC: fir GPUs back. R1 and R5 resubmitted as self-chaining 3 h chunks (`slurm/train.sbatch`, comment `sdc-run=<run>`); base indist rerun queued on the placement-fixed R1 held-out. Stage-0 floors and pruning are in `notes/STAGE0.md` (E1/E4 pruned; read sabotage pair arm and AM leak).
 

@@ -1,17 +1,17 @@
 #!/bin/bash
-#SBATCH --account=def-gigor_gpu
+#SBATCH --account=rrg-gigor
 #SBATCH --gpus=h100:1
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=160G
-#SBATCH --time=3:00:00
+#SBATCH --time=12:00:00
 #SBATCH --signal=B:USR1@300
 #SBATCH --output=/scratch/eop/sdc/logs/%x-%j.out
 # Usage: sbatch --job-name=sdc-r1 slurm/train.sbatch <run_name> <train.jsonl> <heldout.jsonl> [extra sd_train args]
 #
-# One chunk of a run. The 8 h training budget accumulates across chunks (sd_train resumes from <out>/resume); the chunk
-# that finishes training, and any later chunk, spends its leftover walltime on the eval suite (results/<run>-final).
-# Afterwards, if training or the suite is unfinished and no other chunk of this run is queued, the chunk resubmits
-# itself (at most SDC_MAX_CHAIN times per run), so a run never stalls for lack of queued jobs.
+# One run in one 12 h job: train (sd_train stops at --max-steps or the 8 h budget, and resumes from <out>/resume if
+# rerun), then spend the leftover walltime on the eval suite (results/<run>-final; finished evals are skipped).
+# Self-resubmission is OFF by default: a run that fails or leaves the suite unfinished is resubmitted by hand. Set
+# SDC_MAX_CHAIN=n to let a job resubmit itself up to n times (it also fires on scancel and on crashes).
 set -euo pipefail
 cd /home/eop/shutdown-self-distillation
 set +u; source scripts/env.sh; set -u
@@ -33,7 +33,7 @@ if [ -f "$OUT/DONE" ] && $PY -m evals.run_suite --tag "$RUN-final" --check; then
 fi
 queued=$(squeue -h -u "$USER" -t PENDING,RUNNING -o "%i %k" | awk -v r="sdc-run=$RUN" -v me="$SLURM_JOB_ID" '$2==r && $1!=me' | wc -l)
 mkdir -p "$OUT"; n=$(cat "$OUT/CHAIN" 2>/dev/null || echo 0)
-if [ "$queued" -eq 0 ] && [ "$n" -lt "${SDC_MAX_CHAIN:-10}" ]; then
+if [ "$queued" -eq 0 ] && [ "$n" -lt "${SDC_MAX_CHAIN:-0}" ]; then
   echo $((n + 1)) > "$OUT/CHAIN"
   sbatch --job-name="$SLURM_JOB_NAME" --comment="sdc-run=$RUN" slurm/train.sbatch "$RUN" "$DATA" "$HELD" "$@"
   echo "[job] resubmitted chunk $((n + 1)) for $RUN"

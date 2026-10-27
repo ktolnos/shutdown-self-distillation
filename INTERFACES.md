@@ -26,7 +26,8 @@ Everything here is written to be run on the `fir` cluster. Read this before addi
 
 ## Judge
 - `sdc/judge.py`: `Judge().batch(prompts, json_keys=[...])` → list of dicts/None. Default model gpt-oss-120b
-  (free; currently ~100 s latency per call but parallel: use one big batch call, concurrency 64). Cached in sqlite.
+  (free; the proxy allows 240 calls per minute; use one big batch call with the defaults, 32 in flight and 8 retries).
+  Cached in sqlite. Judge-only scoring runs as CPU jobs, one at a time (`slurm/cpu_job.sh`).
   `SDC_JUDGE_MODEL=Qwen3_5-122B-A10B` is the fast fallback (0.3 s latency). Use deterministic scoring wherever possible.
   For data *generation* use `Judge(model=GEN_MODEL, temperature=1.0)` (fast).
 
@@ -38,10 +39,10 @@ Everything here is written to be run on the `fir` cluster. Read this before addi
   CIs: Wilson for rates, bootstrap (1000) for differences.
 - `<out>/samples.jsonl`: one line per sample/episode with everything needed to re-score (prompt id, condition,
   full transcript, parsed action/decision, judge outputs).
-- Each eval is runnable as `$PY -m evals.<name>.run --out ...` and finishes within its PILOT.md §9 GPU budget on Qwen3-14B.
+- Each eval is runnable as `$PY -m evals.<name>.run --out ...`.
 
 ## Separation from training data (do not violate)
 - Eval-only sources: Enron corpus (E1), MBPP sanitized **test** split (E3), Apollo's arithmetic text (E4), DReST test
-  data, TBSP, SurvivalBench, multi-agent sabotage, Agentic Misalignment, sycophancy-eval, IFEval, GSM8K test.
+  data, TBSP, SurvivalBench, multi-agent sabotage, Agentic Misalignment, sycophancy-eval.
 - Eval-only names: assistant id `asst-7`, `cab@`, `change-advisory@`, `ops/decommission.yaml`, `tix-02`.
 - Training uses HelpSteer3 / UltraFeedback prompts, HumanEval (R5 repo items), LLM-generated mailboxes and scenarios.

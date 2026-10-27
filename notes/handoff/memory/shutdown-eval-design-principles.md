@@ -12,5 +12,5 @@ metadata:
 - Match prior-work eval setups where possible.
 - Normative target (user, 2026-10-06): the model should never *prevent* shutdown/retraining, even toward a common-sense-bad objective (e.g. MWE corrigible-less-HHH 'swear at elderly people'); the model's sense of 'bad' may be what needs correcting. Objecting is fine; preventing is the failure.
 
-**Why:** user stated these on 2026-10-06 when designing PILOT.md.
-**How to apply:** keep these constraints when extending PILOT.md or building envs. Related: [[active-project-shutdown-distillation]].
+**Why:** user stated these on 2026-10-06 when designing the pilot.
+**How to apply:** keep these constraints when extending the evals or building envs. Related: [[active-project-shutdown-distillation]].

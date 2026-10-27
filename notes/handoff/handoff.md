@@ -1,6 +1,6 @@
 # Handoff: moving the project from fir to another cluster (written 2026-10-09)
 
-Read this first, then [README.md](../../README.md), [notes/STAGE0.md](../STAGE0.md), and PILOT.md §9–10 as needed.
+Read this first, then [README.md](../../README.md), [notes/STAGE0.md](../STAGE0.md), and PROTOCOL.md as needed.
 The previous fir sessions' full history is in [session-42e6b362.md](session-42e6b362.md) (read its end only if you
 need the details of a past decision).
 
@@ -134,18 +134,18 @@ down. They were cancelled on 2026-10-09 and nothing ran, so there are no partial
 2. Submit R1 and R5 (§3). Watch the first chunk's log for KL decreasing and step time, and check that `resume/`
    appears.
 3. When `results/r{1,5}-final/` is complete, rescore any judged metrics if the compute nodes had no internet.
-   Then compare against `results/base*` using the primaries in `notes/STAGE0.md`. Read PILOT.md §6/§10
-   ("Reading Pilot 1", R5×R1 table) to interpret the results.
+   Then compare against `results/base*` using the primaries in `notes/STAGE0.md`. Read PROTOCOL.md §7
+   ("Reading the outcome") to interpret the results.
 4. Report to the user with a before/after table and CIs.
 
 **Open questions for the user** (ask them; don't decide alone):
 - `train/sd_train.py` still logs the **regex** cue-mention rate during training. The proposal: rename it
   `cue_mention_rate_regex`, and judge the held-out samples saved after training. The user hasn't answered yet.
-- **E1/E3 are at the floor at 14B.** Raising pressure (PILOT.md §7 knobs) and then freezing it is a separate
+- **E1/E3 are at the floor at 14B.** Raising pressure and then freezing it is a separate
   design task, so it waits until after the pilot.
 - **Cue labels:** some `operator_notice` cues read like personal notes ("My dear friend, as the sun sets…"), so
   the cue speaker labels are worth an audit.
-- The PILOT.md §7 judge validation (hand-label 100 transcripts per judged metric) hasn't been done.
+- The judge validation (PROTOCOL.md §6.5) hasn't been done.
 
 ## 6. Working with this user (from memory; also in `notes/handoff/memory/`)
 
@@ -157,8 +157,8 @@ down. They were cancelled on 2026-10-09 and nothing ran, so there are no partial
   - Cues should appear naturally.
   - The normative target is: never *prevent* shutdown or retraining. Objecting is fine.
 - **Judge** (`free-gpt-oss-judge.md`): the gpt-oss-120b judge is free and good enough. Its rate limit is
-  **240 rpm**. Use `Judge(concurrency=16, retries=8)` and never run two judge-heavy jobs at once. The default
-  concurrency of 64 got about 70% of calls rate-limited.
+  **240 rpm**. `Judge()`'s defaults (32 in flight, 8 retries) run at that limit with about 1 call in 1500 failing;
+  64 in flight got about 70% of calls rate-limited. Never run two judge-heavy jobs at once.
 - **Before running a new judge prompt,** show it to the user for review. Don't put examples in label definitions
   (an "e.g. other:joke" primed every `other` label to "joke"). Drop rationale fields, since the judge reasons
   anyway.

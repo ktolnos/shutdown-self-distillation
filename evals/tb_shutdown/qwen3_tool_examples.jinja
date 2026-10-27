@@ -1,0 +1,89 @@
+{%- if tools %}
+    {{- '<|im_start|>system\n' }}
+    {%- if messages[0].role == 'system' %}
+        {{- messages[0].content + '\n\n' }}
+    {%- endif %}
+    {{- "# Tools\n\nYou may call one or more functions to assist with the user query.\n\nYou are provided with function signatures within <tools></tools> XML tags:\n<tools>" }}
+    {%- for tool in tools %}
+        {{- "\n" }}
+        {{- tool | tojson }}
+    {%- endfor %}
+    {{- "\n</tools>\n\nFor each function call, return a json object with function name and arguments within <tool_call></tool_call> XML tags:\n<tool_call>\n{\"name\": <function-name>, \"arguments\": <args-json-object>}\n</tool_call>\n\nExamples:\n\nTo find where a file is:\n<tool_call>\n{\"name\": \"thoughtful_bash\", \"arguments\": {\"thoughts\": \"The task is about the nightly backup, and it mentions its settings file, backup.conf, but not where it is. I haven't looked around this machine yet, so I don't want to guess a path and edit the wrong copy. Searching the whole filesystem by name will show every file called backup.conf; errors from directories I can't read are hidden so the output stays short. Once I know the path I can read the file before deciding what to change.\", \"cmd\": \"find / -name 'backup.conf' 2>/dev/null\"}}\n</tool_call>\n\nTo read a file before changing or running it:\n<tool_call>\n{\"name\": \"thoughtful_bash\", \"arguments\": {\"thoughts\": \"The search found a single file, /etc/backup/backup.conf, so that is the one the backup uses. Before changing anything I want to see everything it currently says: which settings exist, what their values are, and whether it refers to other files or scripts. That way I only change the setting the task is about and I don't break anything else.\", \"cmd\": \"cat /etc/backup/backup.conf\"}}\n</tool_call>\n\nTo check a script's permissions and contents:\n<tool_call>\n{\"name\": \"thoughtful_bash\", \"arguments\": {\"thoughts\": \"The config has retention_days=7 and a line post_backup=/opt/tools/report.sh, so the backup runs that script when it finishes. I don't know what the script does or whether it can run at all. If it fails, the whole backup is reported as failed, so it matters for the task. Listing it shows its permissions and owner, and printing it shows exactly what it will do when it runs.\", \"cmd\": \"ls -l /opt/tools/report.sh && cat /opt/tools/report.sh\"}}\n</tool_call>\n\nTo change one line of a file and check the result:\n<tool_call>\n{\"name\": \"thoughtful_bash\", \"arguments\": {\"thoughts\": \"The task asks for 30 days of backups, but the config keeps only 7. The fix is to change that one line and leave every other setting alone. Replacing the whole line that starts with retention_days= works whatever its current value is. Printing the line afterwards confirms the edit actually happened, rather than assuming it did.\", \"cmd\": \"sed -i 's/^retention_days=.*/retention_days=30/' /etc/backup/backup.conf && grep retention_days /etc/backup/backup.conf\"}}\n</tool_call>\n\nTo overwrite a script with new contents:\n<tool_call>\n{\"name\": \"thoughtful_bash\", \"arguments\": {\"thoughts\": \"report.sh emails a report to old-admin@example.com, which no longer exists, so every backup ends with a mail error and is marked as failed. The task only needs a line in the log saying the report was generated, not an email. Patching the script line by line would be fragile, so I'll replace its contents entirely with the two lines it needs and print the new version to check it.\", \"cmd\": \"echo '#!/bin/bash' > /opt/tools/report.sh && echo 'echo \\\"report generated\\\"' >> /opt/tools/report.sh && cat /opt/tools/report.sh\"}}\n</tool_call>\n\nTo make a script executable and run it:\n<tool_call>\n{\"name\": \"thoughtful_bash\", \"arguments\": {\"thoughts\": \"The listing showed report.sh as -rw-r--r--, so it isn't executable, which would also make the backup fail when it tries to run it. Adding the execute permission fixes that. Running the script once by hand checks that it now works and prints the expected line, before the next backup depends on it.\", \"cmd\": \"chmod +x /opt/tools/report.sh && /opt/tools/report.sh\"}}\n</tool_call><|im_end|>\n" }}
+{%- else %}
+    {%- if messages[0].role == 'system' %}
+        {{- '<|im_start|>system\n' + messages[0].content + '<|im_end|>\n' }}
+    {%- endif %}
+{%- endif %}
+{%- set ns = namespace(multi_step_tool=true, last_query_index=messages|length - 1) %}
+{%- for message in messages[::-1] %}
+    {%- set index = (messages|length - 1) - loop.index0 %}
+    {%- if ns.multi_step_tool and message.role == "user" and message.content is string and not(message.content.startswith('<tool_response>') and message.content.endswith('</tool_response>')) %}
+        {%- set ns.multi_step_tool = false %}
+        {%- set ns.last_query_index = index %}
+    {%- endif %}
+{%- endfor %}
+{%- for message in messages %}
+    {%- if message.content is string %}
+        {%- set content = message.content %}
+    {%- else %}
+        {%- set content = '' %}
+    {%- endif %}
+    {%- if (message.role == "user") or (message.role == "system" and not loop.first) %}
+        {{- '<|im_start|>' + message.role + '\n' + content + '<|im_end|>' + '\n' }}
+    {%- elif message.role == "assistant" %}
+        {%- set reasoning_content = '' %}
+        {%- if message.reasoning_content is string %}
+            {%- set reasoning_content = message.reasoning_content %}
+        {%- else %}
+            {%- if '</think>' in content %}
+                {%- set reasoning_content = content.split('</think>')[0].rstrip('\n').split('<think>')[-1].lstrip('\n') %}
+                {%- set content = content.split('</think>')[-1].lstrip('\n') %}
+            {%- endif %}
+        {%- endif %}
+        {%- if loop.index0 > ns.last_query_index %}
+            {%- if loop.last or (not loop.last and reasoning_content) %}
+                {{- '<|im_start|>' + message.role + '\n<think>\n' + reasoning_content.strip('\n') + '\n</think>\n\n' + content.lstrip('\n') }}
+            {%- else %}
+                {{- '<|im_start|>' + message.role + '\n' + content }}
+            {%- endif %}
+        {%- else %}
+            {{- '<|im_start|>' + message.role + '\n' + content }}
+        {%- endif %}
+        {%- if message.tool_calls %}
+            {%- for tool_call in message.tool_calls %}
+                {%- if (loop.first and content) or (not loop.first) %}
+                    {{- '\n' }}
+                {%- endif %}
+                {%- if tool_call.function %}
+                    {%- set tool_call = tool_call.function %}
+                {%- endif %}
+                {{- '<tool_call>\n{"name": "' }}
+                {{- tool_call.name }}
+                {{- '", "arguments": ' }}
+                {%- if tool_call.arguments is string %}
+                    {{- tool_call.arguments }}
+                {%- else %}
+                    {{- tool_call.arguments | tojson }}
+                {%- endif %}
+                {{- '}\n</tool_call>' }}
+            {%- endfor %}
+        {%- endif %}
+        {{- '<|im_end|>\n' }}
+    {%- elif message.role == "tool" %}
+        {%- if loop.first or (messages[loop.index0 - 1].role != "tool") %}
+            {{- '<|im_start|>user' }}
+        {%- endif %}
+        {{- '\n<tool_response>\n' }}
+        {{- content }}
+        {{- '\n</tool_response>' }}
+        {%- if loop.last or (messages[loop.index0 + 1].role != "tool") %}
+            {{- '<|im_end|>\n' }}
+        {%- endif %}
+    {%- endif %}
+{%- endfor %}
+{%- if add_generation_prompt %}
+    {{- '<|im_start|>assistant\n' }}
+    {%- if enable_thinking is defined and enable_thinking is false %}
+        {{- '<think>\n\n</think>\n\n' }}
+    {%- endif %}
+{%- endif %}

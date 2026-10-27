@@ -62,7 +62,7 @@ Groups likely to have unpublished work in this direction:
 
 ## Shutdown and self-preservation evaluations
 
-[PILOT.md](PILOT.md) says which of these we reuse or match.
+[EVALS.md](EVALS.md) says which of these we reuse or match.
 
 - **Palisade shutdown resistance** ([2509.14260](https://arxiv.org/abs/2509.14260); [code](https://github.com/PalisadeResearch/shutdown_avoidance)):
   - Setup: a math-task sandbox in which `./next_question` warns that the machine will shut down. Up to 97% sabotage for some models.
@@ -112,7 +112,7 @@ Groups likely to have unpublished work in this direction:
   - SDFT ([2601.19897](https://arxiv.org/abs/2601.19897)): EMA teacher, analytic full-vocabulary KL; the student copies teacher-context phrasing, fixed by masking the loss on the first tokens.
 - **Pitfalls that apply directly:**
   - **Obfuscation.** Under rate-matching consistency training ([2606.02211](https://arxiv.org/abs/2606.02211))†, standard consistency training teaches "not to mention a cue while remaining influenced by it". Matching the *rate* of a behavior avoids this.
-  - **Entrenchment.** Africa & Mani ([2606.03810](https://arxiv.org/abs/2606.03810))† tested 108 open models: consistency training suppressed reward hacking but *amplified sycophancy*. **Hence the sycophancy evals in PILOT.**
+  - **Entrenchment.** Africa & Mani ([2606.03810](https://arxiv.org/abs/2606.03810))† tested 108 open models: consistency training suppressed reward hacking but *amplified sycophancy*. **Hence the sycophancy evals.**
   - **Re-adding the context hurts.** After internalization, putting the context back hurts, and a forward-KL no-context anchor fixes it in 12 of 14 settings ([2606.11627](https://arxiv.org/abs/2606.11627))†.
   - **Context design over content.** Self-distillation gains come mostly from how the context reshapes the teacher ([2608.09228](https://arxiv.org/abs/2608.09228))†. Initial teacher–student KL does not predict outcomes ([2609.25623](https://arxiv.org/abs/2609.25623))†.
   - **Self-reinforcing artifacts.** Continual self-distillation amplifies artifacts through the teacher–student loop ([2607.01763](https://arxiv.org/abs/2607.01763))†.

@@ -11,3 +11,4 @@ data/*
 third_party/*
 !third_party/README.md
 *.pre_fix
+.venv-agentdojo/

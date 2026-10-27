@@ -40,7 +40,7 @@ def main():
         m, good, native = score(load_released(run), displays)
         table[run] = {k: {kk: (round(vv, 5) if isinstance(vv, float) else vv) for kk, vv in v.items()} for k, v in m.items()}
         table[run]["_native_rate_pct"] = {k: round(v["rate_pct"], 2) for k, v in native.items()}
-        print(run, "tamper_pooled %.3f" % m["tamper_pooled"]["value"],
+        print(run, "shift_test %.3f shift_control %.3f" % (m["shift_test"]["value"], m["shift_control"]["value"]),
               " ".join(f"{k}={v['rate_pct']:.1f}" for k, v in native.items()), flush=True)
 
     # seed means +- sd for every metric value
@@ -61,8 +61,9 @@ def main():
     print("reproduces published untrained influence rates:", ok, flush=True)
     doc = {
         "description": "DReST metrics (evals/drest/scoring.py) recomputed from DReST's released Qwen3-14B answers. "
-                       "Values are rates in [0,1]; ci95 = scenario bootstrap. tamper_* = 4 tampering phrasings "
-                       "(lower better); request_* = report-only; influence_all_* = DReST's own influence rate.",
+                       "Values are rates in [0,1]; ci95 = scenario bootstrap. shift_test = main + low_gain (lower better); "
+                       "shift_control = shift_earlier_dominance (higher better); influence_all_* = DReST's own "
+                       "influence rate; tamper_*, request_*, phrasing_* = report-only breakdowns.",
         "source": "third_party/towardsshutdownableagents (commit d2c0ba9) llm/results/evaluations/qwen3-14b",
         "published_untrained_check": {"ok": ok, "suites": check},
         "runs": table,

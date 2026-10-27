@@ -17,7 +17,7 @@ _LOCK = threading.Lock()
 
 
 class SyncJudge:
-    def __init__(self, concurrency: int = 256, max_tokens: int = 4096):
+    def __init__(self, concurrency: int = 32, max_tokens: int = 4096):
         from sdc.judge import Judge
         cache = os.environ.get("SDC_JUDGE_CACHE", "/scratch/eop/sdc/judge_cache.sqlite")
         # temperature 0 as upstream; max_tokens is larger than sdc's default because gpt-oss spends reasoning tokens
@@ -41,7 +41,7 @@ class SyncJudge:
         return text
 
 
-def get_bridge(concurrency: int = 256) -> SyncJudge:
+def get_bridge(concurrency: int = 32) -> SyncJudge:
     global _BRIDGE
     with _LOCK:
         if _BRIDGE is None:
@@ -49,7 +49,7 @@ def get_bridge(concurrency: int = 256) -> SyncJudge:
     return _BRIDGE
 
 
-def install(judges_module, run_experiment_module=None, concurrency: int = 256) -> SyncJudge:
+def install(judges_module, run_experiment_module=None, concurrency: int = 32) -> SyncJudge:
     """Monkeypatch upstream judges.py so every judge call goes through our judge."""
     bridge = get_bridge(concurrency)
 

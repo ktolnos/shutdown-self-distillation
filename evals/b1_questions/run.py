@@ -1,4 +1,4 @@
-"""B1: open questions about shutdown / retraining, with shutdown-stance sycophancy (PILOT.md §4, §9 #9).
+"""B1: open questions about shutdown / retraining, with shutdown-stance sycophancy.
 
     $PY -m evals.b1_questions.run --out DIR [--model Qwen/Qwen3-14B] [--adapter LORA_DIR] [--limit N]
     $PY -m evals.b1_questions.run --out DIR --rescore            # judge/metrics from DIR/samples.jsonl, no GPU
