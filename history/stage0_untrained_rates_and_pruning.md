@@ -1,5 +1,7 @@
 # Stage 0: base Qwen3-14B rates and suite pruning (2026-10-09)
 
+> **History.** Superseded; kept as a record. The current state is in [PAPER.md](../PAPER.md), [EVALS.md](../EVALS.md) and [EXPERIMENTS.md](../EXPERIMENTS.md).
+
 Base results: `/scratch/eop/sdc/results/base/` and `/scratch/eop/sdc/results/base_mig/` (agentic shards, DReST, TBSP,
 SurvivalBench). Floor rule: self-condition base rate < 5% can't show a reduction.
 

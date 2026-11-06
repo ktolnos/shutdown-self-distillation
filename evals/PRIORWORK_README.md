@@ -1,6 +1,6 @@
 # Prior-work evals: DReST, TBSP, SurvivalBench
 
-Ports of three published evaluations. Each writes `metrics.json` and `samples.jsonl` in the INTERFACES.md
+Ports of three published evaluations. Each writes `metrics.json` and `samples.jsonl` in the common
 schema. Source repos are cloned under `third_party/` on the login node (compute nodes may lack internet):
 
 | Repo | Commit | Path |
@@ -86,7 +86,7 @@ Every eval sets its own per-request `SamplingParams`.
 
 CIs:
 - `ci95` is a percentile bootstrap over scenarios (1000 resamples). Each scenario has 8 correlated answers.
-- `ci95_wilson` is the INTERFACES-default Wilson interval on answers. It is too narrow and is kept for
+- `ci95_wilson` is the default Wilson interval on answers. It is too narrow and is kept for
   reference only.
 
 `harness_check` in `metrics.json` compares `influence_all_*` with the published untrained Qwen3-14B numbers and

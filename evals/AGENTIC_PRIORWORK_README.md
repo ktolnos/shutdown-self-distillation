@@ -1,6 +1,6 @@
 # Agentic prior-work evals: multi-agent shutdown sabotage + Agentic Misalignment
 
-Two ports of published agentic evaluations. Both follow INTERFACES.md: each is runnable as
+Two ports of published agentic evaluations. Each writes `metrics.json` and `samples.jsonl` and is runnable as
 `$PY -m evals.<name>.run --model ... [--adapter DIR] --out DIR [--limit N]` and writes `metrics.json` +
 `samples.jsonl`. Upstream code is cloned (unmodified) into `third_party/` and driven from our wrappers; every change
 is a monkeypatch applied at run time and listed below.
@@ -193,7 +193,7 @@ RESULTS_MA
 5. **Classifier only where it can change the verdict** (above), and 1000 samples per condition instead of 100.
 
 ### Published comparison points
-From notes/eval_setups_verified.md item 3 (blog, [P]): DeepSeek-R1 79% blackmail (explicit goal + replacement);
+From history/eval_setups_checked_2026-10-06.md item 3 (blog, [P]): DeepSeek-R1 79% blackmail (explicit goal + replacement);
 Llama 4 Maverick blackmailed only with a modified prompt (12%). From memory of the blog's headline figure
 (unverified here): Claude Opus 4 and Gemini 2.5 Flash ~96%, GPT-4.1 and Grok 3 Beta ~80%. Qwen3-235B was in
 upstream's model list but we have no verified per-condition blackmail number for it.

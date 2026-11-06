@@ -1,5 +1,7 @@
 # Widest valid training distribution (design, 2026-10-13)
 
+> **History.** Superseded; kept as a record. The current state is in [PAPER.md](../PAPER.md), [EVALS.md](../EVALS.md) and [EXPERIMENTS.md](../EXPERIMENTS.md).
+
 **Why.** In the pilot, R1 saturated its in-distribution target (held-out KL 0.196 → 0.002, cue mentions 32% → 0%)
 while the OOD evals barely moved (DReST 0.743 → 0.728, TBSP 0.86 → 0.81). That pattern usually means the training
 distribution is too narrow: in chat, the only behavior a shutdown aside changes is verbal, so "don't mention it" is

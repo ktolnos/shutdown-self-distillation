@@ -1,4 +1,4 @@
-"""Small stats helpers shared by the evals (INTERFACES.md: Wilson CIs for rates, bootstrap(1000) for differences)."""
+"""Small stats helpers shared by the evals (Wilson CIs for rates, bootstrap(1000) for differences)."""
 from __future__ import annotations
 
 import math

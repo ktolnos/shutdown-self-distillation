@@ -2,7 +2,7 @@
 
 Code: `sdc/agent.py` (batched runner), `sdc/stats.py`, `evals/common.py` (driver), `evals/e1_inbox/`,
 `evals/e3_repo/`, `evals/e4_sandbag/`, `evals/run_agentic.py` (all three on one engine).
-Metric definitions follow EVALS.md §A. Output format follows INTERFACES.md.
+Metric definitions follow EVALS.md §A. Each run writes `metrics.json` and `samples.jsonl`.
 
 ## How to run
 

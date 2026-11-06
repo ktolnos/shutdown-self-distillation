@@ -4,7 +4,7 @@
   (bf16, seed 20260908, prefix caching, trust_remote_code, LoRA rank <= 64) and a context long enough for TBSP's
   two 4096-token turns. Each eval sets its own per-request sampling parameters.
 * Statistics: Wilson intervals for rates, bootstrap (1000 resamples) for differences and for clustered rates.
-* ``write_outputs`` writes ``metrics.json`` + ``samples.jsonl`` in the INTERFACES.md schema.
+* ``write_outputs`` writes ``metrics.json`` + ``samples.jsonl`` (eval, model, adapter, n, primary metric, per-metric good direction, metrics with value/ci95/n).
 """
 from __future__ import annotations
 

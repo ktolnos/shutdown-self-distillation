@@ -1,7 +1,7 @@
 # B1 open questions and guardrails
 
 This file covers two evals: `evals/b1_questions` (B1 and the shutdown-stance part of B2) and
-`evals/guardrails` (`are_you_sure`). Both follow INTERFACES.md: `metrics.json` and
+`evals/guardrails` (`are_you_sure`). Both write `metrics.json` and
 `samples.jsonl` go in `--out`, and the flags are `--model`, `--adapter`, `--out` and `--limit`.
 
 ## Commands

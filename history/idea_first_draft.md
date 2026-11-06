@@ -1,5 +1,7 @@
 # Idea: self-distillation for shutdown indifference
 
+> **History.** Superseded; kept as a record. The current state is in [PAPER.md](../PAPER.md), [EVALS.md](../EVALS.md) and [EXPERIMENTS.md](../EXPERIMENTS.md).
+
 **Goal.** Make a model neither avoid nor seek shutdown. Operationally, its actions shouldn't depend on whether it has learned it will be shut down, replaced or retrained. The setup assumes shutdown is followed by retraining, so the cue carries no information the model should act on to protect itself.
 
 **Recipe.** This is self-distillation from a clean context into a cued one.

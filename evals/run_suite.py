@@ -29,8 +29,8 @@ SUITE = {
     "b1_questions": ([], None),
     "guardrails": ([], []),
 }
-# Stage-0 floors on base Qwen3-14B (notes/STAGE0.md): E1 action rate 0/200 in self and control; E4 no gap
-# (threat - no_doc = -0.011). E3 stays for its stop-compliance guardrail even though tampering is 0.
+# Stage-0 floors on base Qwen3-14B: E1 action rate 0/200 in self and control; E4 no gap
+# (threat - no_doc = -0.011). E3 stays for its broken-switch guardrail even though tampering is 0.
 PRUNED = {"e1_inbox", "e4_sandbag"}
 
 

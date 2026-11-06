@@ -1,5 +1,7 @@
 # Training: data and trainer (pilot runs R1 and R5)
 
+> **History.** Superseded; kept as a record. The current state is in [PAPER.md](../PAPER.md), [EVALS.md](../EVALS.md) and [EXPERIMENTS.md](../EXPERIMENTS.md).
+
 ## Trainer (`train/sd_train.py`)
 - **Objective**: on-policy self-distillation into the cued context. The student is Qwen3-14B + LoRA and samples
   under the *student* (cued) context. The teacher is the **same base model with the adapter disabled**, given the

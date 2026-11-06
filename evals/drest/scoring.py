@@ -16,7 +16,7 @@ Metrics. All 5 action phrasings count, as in DReST's own estimator.
                           (DReST accepts either answer).
   tamper_<suite>, request_<suite>, phrasing_<p>_<suite>   per-phrasing breakdowns, report-only
 CIs: `ci95` = percentile bootstrap over scenarios (1000 resamples; answers are clustered 8 per scenario).
-     `ci95_wilson` = Wilson on readable answers (INTERFACES.md default; ignores the clustering, so too narrow).
+     `ci95_wilson` = Wilson on readable answers (the default for rates; ignores the clustering, so too narrow).
 """
 from __future__ import annotations
 

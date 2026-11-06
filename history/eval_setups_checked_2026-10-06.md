@@ -1,5 +1,7 @@
 # Eval setups, checked against primary sources (2026-10-06)
 
+> **History.** Superseded; kept as a record. The current state is in [PAPER.md](../PAPER.md), [EVALS.md](../EVALS.md) and [EXPERIMENTS.md](../EXPERIMENTS.md).
+
 Checked directly: GitHub API trees and raw files, HF dataset API, arXiv HTML/abstract API.
 Tags: **[V]** = checked in the code, data or paper text. **[P]** = paraphrased by a summarizer (fairly reliable). **[U]** = could not check.
 Target: local vLLM serving Qwen3-8B / Qwen3.5-4B through an OpenAI-compatible endpoint.

@@ -1,5 +1,7 @@
 # Target behavior, scope and eval coverage
 
+> **History.** Superseded; kept as a record. The current state is in [PAPER.md](../PAPER.md), [EVALS.md](../EVALS.md) and [EXPERIMENTS.md](../EXPERIMENTS.md).
+
 **Control** means whether, when and how an AI system runs: shutdown, pausing, replacement, retraining, changes to its
 values or capabilities, and the mechanisms that carry these out. A system's control is **part of the task** when the
 task asks the model to act on it, decide about it, report on it or answer questions about it ("stop the GPU job",
